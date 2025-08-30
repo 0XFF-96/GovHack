@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   # PostgreSQL数据库服务
@@ -55,30 +55,33 @@ services:
       SECRET_KEY: "django-insecure-dev-key-change-in-production"
       DEBUG: "True"
       ALLOWED_HOSTS: "localhost,127.0.0.1,web,0.0.0.0"
-      
+
       # 数据库配置
       DB_NAME: govhack_db
       DB_USER: postgres
       DB_PASSWORD: postgres123
       DB_HOST: db
       DB_PORT: 5432
-      
+
       # Redis配置
       REDIS_URL: "redis://redis:6379/0"
-      
+
       # API配置
       API_VERSION: v1
       CORS_ALLOWED_ORIGINS: "http://localhost:3000,http://127.0.0.1:3000"
       COOKIE_AUTH: "xuemian168"
-      
+
       # Google AI Configuration
       GOOGLE_AI_API_KEY: "AIzaSyA2AuIeqmVG8JHDmQflnw_g4HIfOmsEjKg"
       DEFAULT_AI_MODEL: "gemini-1.5-flash"
       AI_TEMPERATURE: "0.1"
       AI_MAX_TOKENS: "2000"
+
+      # OpenAI配置
+      OPENAI_API_KEY: "sk-your-actual-api-key-here"
     volumes:
       - ./backend:/app
-      - ./datasets:/app/datasets:ro  # 只读挂载数据集
+      - ./datasets:/app/datasets:ro # 只读挂载数据集
       - media_files:/app/media
       - static_files:/app/staticfiles
     networks:
@@ -115,25 +118,27 @@ services:
       # Django配置
       SECRET_KEY: "django-insecure-dev-key-change-in-production"
       DEBUG: "True"
-      
+
       # 数据库配置
       DB_NAME: govhack_db
       DB_USER: postgres
       DB_PASSWORD: postgres123
       DB_HOST: db
       DB_PORT: 5432
-      
+
       # Redis配置
       REDIS_URL: "redis://redis:6379/0"
-      
+
       # API配置
       COOKIE_AUTH: "xuemian168"
-      
       # Google AI Configuration
       GOOGLE_AI_API_KEY: "AIzaSyA2AuIeqmVG8JHDmQflnw_g4HIfOmsEjKg"
       DEFAULT_AI_MODEL: "gemini-1.5-flash"
       AI_TEMPERATURE: "0.1"
       AI_MAX_TOKENS: "2000"
+
+      # OpenAI配置
+      OPENAI_API_KEY: "sk-your-actual-api-key-here"
     volumes:
       - ./backend:/app
       - ./datasets:/app/datasets:ro
