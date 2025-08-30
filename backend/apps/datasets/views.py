@@ -412,7 +412,7 @@ def budget_search(request):
     tags=["Budget Query"]
 )
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([])
 def budget_summary(request):
     """
     # Budget Overview Dashboard
@@ -529,7 +529,7 @@ def budget_summary(request):
     tags=["Budget Query"]
 )
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([])
 def budget_trends(request):
     """
     # Budget Trend Analysis
