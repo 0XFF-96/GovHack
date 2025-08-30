@@ -10,12 +10,16 @@ from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 import uuid
+import logging
 
 from .models import ChatSession, ChatMessage, QueryContext
 from .serializers import (
     ChatSessionSerializer, ChatMessageSerializer,
     ChatQuerySerializer, ChatResponseSerializer
 )
+from .services import ai_service
+
+logger = logging.getLogger(__name__)
 
 
 class ChatSessionListCreateView(generics.ListCreateAPIView):
@@ -278,26 +282,67 @@ def chat_query(request):
             metadata={'context': context}
         )
 
-        # TODO: This should call the NLP processing service
-        # Currently returns a mock response
-        assistant_response = f"Received your query: '{query}'\n\nThis is a mock response. In actual implementation, this would:\n1. Parse your natural language query\n2. Retrieve relevant information from government datasets\n3. Generate accurate answers and assess trust scores\n\nQuery context: {context}"
+        # Get conversation history for context
+        conversation_history = []
+        previous_messages = ChatMessage.objects.filter(
+            session=session
+        ).order_by('-timestamp')[:10]  # Last 10 messages
+        
+        for msg in reversed(previous_messages):
+            role = "user" if msg.message_type == "user" else "assistant"
+            conversation_history.append({
+                "role": role,
+                "content": msg.content
+            })
+
+        # Process query with OpenRouter AI
+        try:
+            ai_response = ai_service.process_query(
+                user_query=query,
+                conversation_history=conversation_history[:-1]  # Exclude current message
+            )
+            
+            assistant_response = ai_response.content
+            trust_score = ai_response.trust_score
+            processing_time = ai_response.processing_time
+            data_sources = ai_response.data_sources
+            intent = ai_response.intent
+            entities = ai_response.entities
+            model_used = ai_response.model_used
+            
+            logger.info(f"AI Response generated - Trust Score: {trust_score}, Processing Time: {processing_time:.3f}s")
+            
+        except Exception as e:
+            logger.error(f"AI service error: {e}")
+            assistant_response = f"I apologize, but I'm currently experiencing technical difficulties processing your query about Australian government data. Please try again in a moment."
+            trust_score = 0.0
+            processing_time = 0.0
+            data_sources = []
+            intent = 'error'
+            entities = {}
+            model_used = 'fallback'
 
         # Create assistant reply
         assistant_message = ChatMessage.objects.create(
             session=session,
             message_type='assistant',
             content=assistant_response,
-            metadata={'generated_at': timezone.now().isoformat()},
-            trust_score=0.85  # Mock trust score
+            metadata={
+                'generated_at': timezone.now().isoformat(),
+                'model_used': model_used,
+                'processing_time': processing_time,
+                'data_sources': data_sources
+            },
+            trust_score=trust_score
         )
 
         # Create query context
         QueryContext.objects.create(
             message=user_message,
-            extracted_entities={'query_type': 'budget_inquiry'},
-            intent='data_query',
-            data_sources=['budget_2024'],
-            processing_time=0.15
+            extracted_entities=entities,
+            intent=intent,
+            data_sources=data_sources,
+            processing_time=processing_time
         )
 
         # Update session time
@@ -309,11 +354,12 @@ def chat_query(request):
             'user_message': ChatMessageSerializer(user_message).data,
             'assistant_message': ChatMessageSerializer(assistant_message).data,
             'processing_info': {
-                'processing_time': 0.15,
-                'data_sources_used': ['budget_2024'],
-                'intent_detected': 'data_query'
+                'processing_time': processing_time,
+                'data_sources_used': data_sources,
+                'intent_detected': intent,
+                'model_used': model_used
             },
-            'trust_score': 0.85
+            'trust_score': trust_score
         }
 
         return Response(response_data, status=status.HTTP_200_OK)

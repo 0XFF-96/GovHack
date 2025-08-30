@@ -83,27 +83,25 @@ export interface BudgetTrend {
   };
 }
 
-// Chat types
+// Chat types - matching actual backend response
 export interface ChatMessage {
   id: string;
+  message_type: 'user' | 'assistant' | 'system';
   content: string;
-  role: 'user' | 'assistant';
-  created_at: string;
+  metadata?: any;
   trust_score?: number;
-  sources?: Array<{
-    dataset: string;
-    table: string;
-    rows: number[];
-  }>;
+  timestamp: string;
+  context?: any;
 }
 
 export interface ChatSession {
   id: string;
+  session_id: string;
   title: string;
   created_at: string;
   updated_at: string;
+  is_active: boolean;
   message_count: number;
-  last_message?: ChatMessage;
 }
 
 export interface ChatQueryRequest {
@@ -114,24 +112,19 @@ export interface ChatQueryRequest {
     department?: string;
     filters?: Record<string, any>;
   };
-  options?: {
-    include_confidence?: boolean;
-    include_sources?: boolean;
-    max_results?: number;
-  };
 }
 
 export interface ChatQueryResponse {
-  answer: string;
-  confidence_score?: number;
-  sources?: Array<{
-    dataset: string;
-    table: string;
-    rows: number[];
-  }>;
-  suggested_followups?: string[];
   session_id: string;
-  message_id: string;
+  user_message: ChatMessage;
+  assistant_message: ChatMessage;
+  processing_info: {
+    processing_time: number;
+    data_sources_used: string[];
+    intent_detected: string;
+    model_used: string;
+  };
+  trust_score: number;
 }
 
 // Trust scoring types

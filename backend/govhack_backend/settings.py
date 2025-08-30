@@ -126,6 +126,17 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# OpenRouter AI Configuration
+OPENROUTER_API_KEY = config('OPENROUTER_API_KEY', default='')
+OPENROUTER_BASE_URL = config('OPENROUTER_BASE_URL', default='https://openrouter.ai/api/v1')
+DEFAULT_AI_MODEL = config('DEFAULT_AI_MODEL', default='anthropic/claude-3.5-sonnet')
+AI_TEMPERATURE = config('AI_TEMPERATURE', default=0.1, cast=float)
+AI_MAX_TOKENS = config('AI_MAX_TOKENS', default=2000, cast=int)
+
+# Trust Scoring Configuration
+MIN_TRUST_SCORE = config('MIN_TRUST_SCORE', default=0.5, cast=float)
+HIGH_CONFIDENCE_THRESHOLD = config('HIGH_CONFIDENCE_THRESHOLD', default=0.8, cast=float)
+
 # Django REST Framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
