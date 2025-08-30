@@ -1,0 +1,50 @@
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.egg-info
+.pytest_cache
+.coverage
+
+# Django
+*.log
+media/
+staticfiles/
+
+# Development
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Node modules (if any)
+node_modules/
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Temporary files
+*.tmp
+*.temp

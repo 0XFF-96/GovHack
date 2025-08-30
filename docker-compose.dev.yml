@@ -1,0 +1,101 @@
+# 开发环境专用的Docker Compose配置
+version: '3.8'
+
+services:
+  # Django开发服务器 - 带热重载
+  web:
+    command: >
+      sh -c "
+        echo 'Waiting for database...' &&
+        python manage.py migrate &&
+        echo 'Database migration completed.' &&
+        echo 'Starting Django development server with hot reload...' &&
+        python manage.py runserver 0.0.0.0:8000
+      "
+    environment:
+      # 开发环境特定配置
+      DJANGO_SETTINGS_MODULE: govhack_backend.settings
+      PYTHONUNBUFFERED: 1
+      PYTHONDONTWRITEBYTECODE: 1
+      # 开启Django调试模式
+      DEBUG: "True"
+      # 热重载配置
+      DJANGO_WATCHMAN_TIMEOUT: 30
+    volumes:
+      # 挂载源码目录以支持热重载
+      - ./backend:/app:delegated
+      # 挂载数据集目录
+      - ./datasets:/app/datasets:ro
+      # 排除某些目录避免不必要的监听
+      - /app/__pycache__
+      - /app/.git
+      - /app/staticfiles
+    ports:
+      - "8000:8000"
+    # 开发环境不需要健康检查，启动更快
+    healthcheck:
+      disable: true
+    # 开发环境使用restart: "no"，方便调试
+    restart: "no"
+
+  # 数据库 - 开发配置
+  db:
+    environment:
+      # 开发环境数据库配置
+      POSTGRES_DB: govhack_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: dev123
+      # 开启详细日志用于调试
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --lc-collate=C --lc-ctype=C"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      # 挂载初始化脚本
+      - ./sql/dev-init:/docker-entrypoint-initdb.d
+    ports:
+      - "5433:5432"  # 使用不同端口避免冲突
+    # 开发环境快速启动
+    command: postgres -c log_statement=all -c log_destination=stderr
+
+  # Redis - 开发配置
+  redis:
+    ports:
+      - "6380:6379"  # 使用不同端口避免冲突
+    # 开发环境不持久化，重启清空缓存
+    volumes: []
+    command: redis-server --save "" --appendonly no --maxmemory 128mb
+
+  # Celery Worker - 开发模式
+  celery_worker:
+    command: >
+      sh -c "
+        echo 'Starting Celery worker in development mode...' &&
+        celery -A govhack_backend worker --loglevel=debug --concurrency=1 --pool=solo
+      "
+    environment:
+      # 开发环境数据库配置
+      DB_NAME: govhack_dev
+      DB_USER: postgres  
+      DB_PASSWORD: dev123
+      DB_HOST: db
+      DB_PORT: 5432
+      REDIS_URL: "redis://redis:6379/0"
+      DEBUG: "True"
+      PYTHONUNBUFFERED: 1
+    volumes:
+      - ./backend:/app:delegated
+      - ./datasets:/app/datasets:ro
+    # 开发环境不自动重启
+    restart: "no"
+    # 在开发中不总是需要celery
+    profiles:
+      - celery
+
+# 开发环境数据卷
+volumes:
+  postgres_dev_data:
+    driver: local
+
+# 网络配置
+networks:
+  default:
+    name: govhack_dev_network

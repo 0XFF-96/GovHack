@@ -1,0 +1,117 @@
+### GovHack API测试文件
+### 在VSCode中安装REST Client扩展后可直接运行
+
+@baseUrl = http://localhost:8000
+@contentType = application/json
+
+### 健康检查
+GET {{baseUrl}}/api/health/
+
+### 获取API文档
+GET {{baseUrl}}/api/docs/
+
+### API根路径
+GET {{baseUrl}}/api/
+
+### =====================================
+### 数据集管理API测试 (公开访问)
+### =====================================
+
+### 获取部门组合列表
+GET {{baseUrl}}/api/v1/datasets/portfolios/
+
+### 获取部门列表  
+GET {{baseUrl}}/api/v1/datasets/departments/
+
+### 获取数据统计概览
+GET {{baseUrl}}/api/v1/datasets/stats/overview/
+
+### 获取数据集列表 (公开)
+GET {{baseUrl}}/api/v1/data/datasets/
+
+### 预算数据搜索
+POST {{baseUrl}}/api/v1/datasets/budget/search/
+Content-Type: {{contentType}}
+
+{
+  "query": "教育",
+  "fiscal_year": "2024-25",
+  "limit": 10
+}
+
+### 预算摘要统计
+GET {{baseUrl}}/api/v1/datasets/budget/summary/?fiscal_year=2024-25
+
+### 数据统计概览
+GET {{baseUrl}}/api/v1/datasets/stats/overview/
+
+### 导入状态查询
+GET {{baseUrl}}/api/v1/datasets/import/status/
+
+### =====================================
+### 聊天API测试
+### =====================================
+
+### 创建聊天会话
+POST {{baseUrl}}/api/v1/chat/sessions/
+Content-Type: {{contentType}}
+
+{
+  "title": "测试会话"
+}
+
+### 发送聊天消息
+POST {{baseUrl}}/api/v1/chat/query/
+Content-Type: {{contentType}}
+
+{
+  "query": "2024年教育部的预算是多少？",
+  "context": {
+    "fiscal_year": "2024-25"
+  }
+}
+
+### =====================================
+### 数据处理API测试
+### =====================================
+
+### 获取数据集列表
+GET {{baseUrl}}/api/v1/data/datasets/
+
+### 数据搜索
+POST {{baseUrl}}/api/v1/data/search/
+Content-Type: {{contentType}}
+
+{
+  "query": "健康",
+  "filters": {
+    "fiscal_year": "2024-25"
+  }
+}
+
+### =====================================
+### 信任评分API测试
+### =====================================
+
+### 计算信任分数
+POST {{baseUrl}}/api/v1/trust/score/
+Content-Type: {{contentType}}
+
+{
+  "query": "教育部预算查询",
+  "data_sources": ["budget_2024_25"],
+  "response": "2024-25财年教育部预算为XX亿澳元"
+}
+
+### 获取信任度指标
+GET {{baseUrl}}/api/v1/trust/metrics/
+
+### =====================================
+### 审计追踪API测试
+### =====================================
+
+### 获取审计日志
+GET {{baseUrl}}/api/v1/audit/logs/
+
+### 获取用户活动统计
+GET {{baseUrl}}/api/v1/audit/user-activity/
