@@ -1,6 +1,7 @@
 """
 Chat API views for handling chat sessions and messages.
 """
+import json
 from rest_framework import generics, status, permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -282,40 +283,44 @@ def chat_query(request):
             metadata={'context': context}
         )
 
-        # Get conversation history for context
-        conversation_history = []
-        previous_messages = ChatMessage.objects.filter(
-            session=session
-        ).order_by('-timestamp')[:10]  # Last 10 messages
+        # 调用AI查询服务
+        from .ai_service import ai_service
         
-        for msg in reversed(previous_messages):
-            role = "user" if msg.message_type == "user" else "assistant"
-            conversation_history.append({
-                "role": role,
-                "content": msg.content
-            })
-
-        # Process query with OpenRouter AI
         try:
-            ai_response = ai_service.process_query(
-                user_query=query,
-                conversation_history=conversation_history[:-1]  # Exclude current message
-            )
+            ai_result = ai_service.process_query(query, context)
             
-            assistant_response = ai_response.content
-            trust_score = ai_response.trust_score
-            processing_time = ai_response.processing_time
-            data_sources = ai_response.data_sources
-            intent = ai_response.intent
-            entities = ai_response.entities
-            model_used = ai_response.model_used
-            
-            logger.info(f"AI Response generated - Trust Score: {trust_score}, Processing Time: {processing_time:.3f}s")
-            
+            if ai_result.get('success'):
+                # 构建结构化响应
+                response_data = {
+                    'answer': ai_result.get('answer', query),
+                    'method': ai_result.get('method', 'SQL'),
+                    'executed_query': ai_result.get('executed_query'),
+                    'data_sources': ai_result.get('data_sources', []),
+                    'summary': ai_result.get('summary'),
+                    'table_data': ai_result.get('table_data'),
+                    'metadata': ai_result.get('metadata', {}),
+                    'confidence': ai_result.get('confidence', 0.5)
+                }
+                
+                assistant_response = json.dumps(response_data, ensure_ascii=False, indent=2)
+                trust_score = ai_result.get('confidence', 0.5)
+                processing_time = 0.0
+                data_sources = ai_result.get('data_sources', [])
+                intent = 'data_query'
+                entities = {}
+                model_used = 'ai_service'
+            else:
+                assistant_response = f"抱歉，处理查询时出现错误: {ai_result.get('error', '未知错误')}"
+                trust_score = 0.1
+                processing_time = 0.0
+                data_sources = []
+                intent = 'error'
+                entities = {}
+                model_used = 'ai_service'
+                
         except Exception as e:
-            logger.error(f"AI service error: {e}")
-            assistant_response = f"I apologize, but I'm currently experiencing technical difficulties processing your query about Australian government data. Please try again in a moment."
-            trust_score = 0.0
+            assistant_response = f"AI服务暂时不可用，使用基础响应: {query}\n\n错误: {str(e)}"
+            trust_score = 0.3
             processing_time = 0.0
             data_sources = []
             intent = 'error'

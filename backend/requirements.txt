@@ -25,3 +25,7 @@ gunicorn==21.2.0
 # Development tools
 django-extensions==3.2.3
 watchdog==3.0.0
+
+# AI/LLM Integration
+langchain==0.0.340
+tiktoken==0.5.1

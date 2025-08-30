@@ -1,19 +1,19 @@
 'use client';
 
-import React from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { 
-  LayoutDashboard, 
-  Database, 
-  Settings,
-  Menu,
-  X
+import { cn } from '@/lib/utils';
+import {
+    Database,
+    LayoutDashboard,
+    Menu,
+    MessageSquare,
+    Settings,
+    X
 } from 'lucide-react';
-import { useState } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import React, { useState } from 'react';
 
 interface NavigationItem {
   name: string;
@@ -26,6 +26,11 @@ const navigation: NavigationItem[] = [
     name: 'Dashboard',
     href: '/dashboard',
     icon: LayoutDashboard,
+  },
+  {
+    name: 'AI Query',
+    href: '/query',
+    icon: MessageSquare,
   },
   {
     name: 'Data Management',
