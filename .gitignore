@@ -145,7 +145,6 @@ env.bak/
 venv.bak/
 CLAUDE.md
 node_modules/
-dashboard/
 .playwright-mcp/
 .claude/
 
