@@ -30,7 +30,7 @@ def api_root(request):
         'api_modules': {
             'chat': request.build_absolute_uri('/api/v1/chat/'),
             'datasets': request.build_absolute_uri('/api/v1/datasets/'),
-            'data_processing': request.build_absolute_uri('/api/v1/data/'),
+            'data_processing': request.build_absolute_uri('/api/v1/data-processing/'),
             'trust_scoring': request.build_absolute_uri('/api/v1/trust/'),
             'audit': request.build_absolute_uri('/api/v1/audit/'),
         }
@@ -59,7 +59,7 @@ urlpatterns = [
     
     # API v1
     path('api/v1/chat/', include('apps.chat.urls')),
-    path('api/v1/data/', include('apps.data_processing.urls')),
+    path('api/v1/data-processing/', include('apps.data_processing.urls')),
     path('api/v1/trust/', include('apps.trust_scoring.urls')),
     path('api/v1/audit/', include('apps.audit.urls')),
     path('api/v1/datasets/', include('apps.datasets.urls')),

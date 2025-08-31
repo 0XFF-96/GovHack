@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import {
+    Bot,
     Database,
     LayoutDashboard,
     Menu,
@@ -19,6 +20,7 @@ interface NavigationItem {
   name: string;
   href: string;
   icon: React.ComponentType<any>;
+  description?: string;
 }
 
 const navigation: NavigationItem[] = [
@@ -26,21 +28,31 @@ const navigation: NavigationItem[] = [
     name: 'Dashboard',
     href: '/dashboard',
     icon: LayoutDashboard,
+    description: 'Overview and analytics'
+  },
+  {
+    name: 'AI Chat',
+    href: '/chat',
+    icon: Bot,
+    description: 'Chat with AI assistant'
   },
   {
     name: 'AI Query',
     href: '/query',
     icon: MessageSquare,
+    description: 'Advanced data queries'
   },
   {
     name: 'Data Management',
     href: '/data',
     icon: Database,
+    description: 'Manage datasets'
   },
   {
     name: 'Settings',
     href: '/settings',
     icon: Settings,
+    description: 'System configuration'
   },
 ];
 

@@ -1,11 +1,11 @@
 'use client';
 
+import { Bot, Loader2, Send, User } from 'lucide-react';
 import React, { useState } from 'react';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Bot, User, Send, Loader2 } from 'lucide-react';
 import { api } from '../../lib/api';
+import { Button } from '../ui/button';
+import { Card, CardHeader, CardTitle } from '../ui/card';
+import { Input } from '../ui/input';
 
 interface ChatMessage {
   id: string;
@@ -36,25 +36,7 @@ export function AIGovChatbot() {
     setIsLoading(true);
 
     try {
-      const requestPayload: any = {
-        query: inputMessage,
-        context: {}
-      };
-      
-      // Only include session_id if we have one (not for the first message)
-      if (sessionId) {
-        requestPayload.session_id = sessionId;
-      }
-      
-      console.log('Sending request to API:');
-      console.log('- URL: /api/v1/chat/query/');
-      console.log('- Method: POST');
-      console.log('- Request Object:', requestPayload);
-      console.log('- Query value:', requestPayload.query);
-      console.log('- Query type:', typeof requestPayload.query);
-      console.log('- Session ID:', requestPayload.session_id || 'NOT_PROVIDED (new session)');
-      
-      const response = await api.chat.query(requestPayload);
+      const response = await api.chat.sendMessage(inputMessage, sessionId || undefined, {});
       
       console.log('API Response:', response);
 
@@ -65,11 +47,11 @@ export function AIGovChatbot() {
       }
 
       const assistantMessage: ChatMessage = {
-        id: response.assistant_message.id.toString(),
-        content: response.assistant_message.content,
+        id: response.assistant_message?.id?.toString() || Date.now().toString(),
+        content: response.assistant_message?.content || 'No response content',
         role: 'assistant',
-        timestamp: response.assistant_message.timestamp,
-        trust_score: response.trust_score
+        timestamp: response.assistant_message?.timestamp || new Date().toISOString(),
+        trust_score: response.trust_score || 0.5
       };
       
       console.log('Processed assistant message:', assistantMessage);
@@ -111,15 +93,15 @@ export function AIGovChatbot() {
   };
 
   return (
-    <div className="flex flex-col h-[600px] max-w-4xl mx-auto">
+    <div className="flex flex-col h-[700px] max-w-4xl mx-auto">
       <Card className="mb-4">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2">
             <Bot className="h-5 w-5 text-blue-600" />
-            Australian Government AI Assistant
+            Hybrid AI Government Assistant
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Ask questions about Australian government budgets, departments, and policies.
+            Smart routing between SQL queries and RAG retrieval for comprehensive government data analysis.
           </p>
         </CardHeader>
       </Card>
@@ -129,14 +111,14 @@ export function AIGovChatbot() {
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <Bot className="h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Welcome to GovHack AI Assistant</h3>
+              <h3 className="text-lg font-semibold mb-2">Welcome to GovHack Hybrid AI Assistant</h3>
               <p className="text-muted-foreground mb-4 max-w-md">
-                I can help you explore Australian government data, budgets, and policies.
+                I can help you explore Australian government data using intelligent routing between statistical analysis and document retrieval.
               </p>
               <div className="space-y-2 text-sm text-muted-foreground">
-                <p>• "What is the education department budget for 2024?"</p>
-                <p>• "How much does health spending compare to defense?"</p>
-                <p>• "Show me the largest government portfolios"</p>
+                <p>• "What is the education department budget for 2024?" (SQL)</p>
+                <p>• "Find details about Supplier Company 1" (RAG)</p>
+                <p>• "Show me budget summary and employee records" (Hybrid)</p>
               </div>
             </div>
           ) : (
@@ -225,7 +207,7 @@ export function AIGovChatbot() {
             </Button>
           </form>
           <p className="text-xs text-muted-foreground mt-2">
-            Press Enter to send • Powered by Google Gemini AI
+            Press Enter to send • Powered by Hybrid AI System (SQL + RAG)
           </p>
         </div>
       </Card>
