@@ -1,4 +1,4 @@
-# GovHack
+<img width="918" height="1570" alt="d4c13e76aa227b38134db75c2e9b0919" src="https://github.com/user-attachments/assets/fc849c14-7253-4d19-a98d-f9d6a04fa189" /># GovHack
 
 # **An Accurate and Trustworthy Chatbot for Data Interactions**
 
@@ -118,3 +118,9 @@ Ethical AI: All AI proposals must demonstrate commitment to ethical AI practices
 - 查询匹配度评分（0-1）
 - 历史准确性评分（基于反馈）
 - 综合置信度计算公式
+
+
+<img width="918" height="1570" alt="圖片_20250831154027_176_138" src="https://github.com/user-attachments/assets/334028aa-f3f6-4821-8774-ceeef9ea5973" />
+
+
+
