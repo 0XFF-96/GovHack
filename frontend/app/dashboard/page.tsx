@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { BudgetLayout } from '@/components/layout/budget-layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -20,9 +20,15 @@ import {
 import { useBudgetDashboard } from '@/hooks/use-budget-data';
 import { BudgetChart } from '@/components/budget-chart';
 import { StatsCard } from '@/components/stats-card';
+import { ChatSidebar } from '@/components/chat/chat-sidebar';
 
 export default function DashboardPage() {
   const { summary, trends, datasets, isLoading, isError, error } = useBudgetDashboard('2024-25');
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
+  const toggleChat = () => {
+    setIsChatOpen(!isChatOpen);
+  };
 
   if (isError) {
     return (
@@ -216,6 +222,12 @@ export default function DashboardPage() {
         ))}
         </div>
       </div>
+
+      {/* Chat Sidebar */}
+      <ChatSidebar 
+        isOpen={isChatOpen} 
+        onToggle={toggleChat}
+      />
     </BudgetLayout>
   );
 }
