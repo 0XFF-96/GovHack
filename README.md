@@ -121,6 +121,7 @@ Ethical AI: All AI proposals must demonstrate commitment to ethical AI practices
 
 
 <img width="918" height="1570" alt="圖片_20250831154027_176_138" src="https://github.com/user-attachments/assets/334028aa-f3f6-4821-8774-ceeef9ea5973" />
+<img width="321" height="563" alt="圖片_20250831154017_175_138" src="https://github.com/user-attachments/assets/7356278b-5c16-4daa-8983-3572c39ec425" />
 
 
 
